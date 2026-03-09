@@ -30,7 +30,7 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin
   box-sizing: border-box;
 }
 
-/* ─── Header (保持) ─── */
+/* ─── Header ─── */
 .header {
   background: linear-gradient(135deg,#2e5b8a 0%,#1a3a5c 100%);
   padding: 36px 30px;
@@ -179,6 +179,20 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin
   margin-bottom: 8px;
 }
 
+/* ─── Tax note box ─── */
+.tax-note-box {
+  background: #f7fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: #4a5568;
+  line-height: 1.7;
+}
+.tax-note-box.kojin { background: #fffaf0; border-color: #fbd38d; color: #744210; }
+.tax-note-box.hojin { background: #ebf8ff; border-color: #90cdf4; color: #2b6cb0; }
+
 /* ─── Result panel ─── */
 .result-panel-inner {
   background: #fff;
@@ -259,7 +273,7 @@ input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin
 .cta-section h3 { font-size: 16px; color: #c0392b; margin-bottom: 8px; }
 .cta-section p  { font-size: 13px; color: #555; line-height: 1.7; margin-bottom: 4px; }
 
-/* ─── Footer (保持) ─── */
+/* ─── Footer ─── */
 footer {
   background: #1a2a4a;
   color: rgba(255,255,255,0.7);
@@ -268,19 +282,6 @@ footer {
   font-size: 12px;
   line-height: 1.8;
   margin-top: 20px;
-}
-
-/* ─── Link toggle btn ─── */
-.link-toggle-btn {
-  padding: 3px 12px;
-  border-radius: 16px;
-  border: 1px solid #805ad5;
-  background: #faf5ff;
-  color: #6b46c1;
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: inherit;
 }
 
 /* ─── Responsive ─── */
@@ -313,7 +314,7 @@ footer {
 <body>
 <div class="container">
 
-  <!-- ═══ HEADER (保持) ═══ -->
+  <!-- ═══ HEADER ═══ -->
   <div class="header">
     <h1>鍼灸院経営・人生設計シミュレーター</h1>
     <p>これは単なる計算機ではありません。<br>先生が「技術を磨くこと」が、<br>いかにして「自由な時間」「精神的なゆとり」<br>そして「揺るぎない未来の安心」へと直結するかを証明する未来逆算型シミュレーターです。</p>
@@ -613,26 +614,17 @@ footer {
               <input type="number" id="clinic-utilities" value="0" min="0" step="0.5" oninput="calculate()">
               <span class="unit">万円</span>
             </div>
+            <!-- ▼ 追加：通信費 -->
+            <div class="form-row">
+              <label>通信費（院）</label>
+              <input type="number" id="clinic-telecom" value="0.5" min="0" step="0.1" oninput="calculate()">
+              <span class="unit">万円</span>
+            </div>
             <div class="form-row">
               <label>広告費（万円/月）</label>
               <input type="number" id="clinic-ad" value="0" min="0" step="0.5" oninput="calculate()">
               <span class="unit">万円</span>
             </div>
-
-            <!-- 研修費：年商連動トグル -->
-            <div class="form-row" style="align-items:flex-start;flex-direction:column;gap:4px;">
-              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                <label style="min-width:170px;font-size:12.5px;font-weight:600;color:#4a5568;">研修費（万円/月）</label>
-                <button class="link-toggle-btn" id="training-link-btn" onclick="toggleTrainingLink()">年商連動 ON</button>
-              </div>
-              <div id="training-link-info" style="font-size:12px;color:#553c9a;background:#faf5ff;border:1px solid #d6bcfa;border-radius:6px;padding:6px 10px;margin-top:4px;display:block;"></div>
-              <div id="training-manual-row" class="form-row" style="display:none;margin-top:4px;margin-bottom:0;">
-                <label style="min-width:170px;font-size:12.5px;font-weight:600;color:#4a5568;">研修費（手動入力）</label>
-                <input type="number" id="clinic-training" value="0" min="0" step="0.5" oninput="calculate()">
-                <span class="unit">万円</span>
-              </div>
-            </div>
-
             <div class="form-row">
               <label>消耗品・材料費</label>
               <input type="number" id="clinic-supplies" value="1.5" min="0" step="0.5" oninput="calculate()">
@@ -650,7 +642,7 @@ footer {
             </div>
             <div class="form-note">1人経営の場合は0</div>
             <div class="form-row">
-              <label>社会保険料（国保・年金）</label>
+              <label>社会保険（社保、国保、年金、介護保険、雇用保険など）</label>
               <input type="number" id="clinic-insurance" value="4" min="0" step="0.5" oninput="calculate()">
               <span class="unit">万円</span>
             </div>
@@ -664,6 +656,27 @@ footer {
               <input type="number" id="clinic-other" value="0" min="0" step="0.5" oninput="calculate()">
               <span class="unit">万円</span>
             </div>
+
+            <!-- ▼ 追加：税金セクション -->
+            <div class="sec-title">💴 税金</div>
+            <div class="form-row">
+              <label>事業形態</label>
+              <div class="toggle-group">
+                <div class="toggle-btn active" onclick="setToggle('biz-type','kojin',this);updateBizTypeNote()">個人事業主</div>
+                <div class="toggle-btn" onclick="setToggle('biz-type','hojin',this);updateBizTypeNote()">法人</div>
+              </div>
+              <input type="hidden" id="biz-type" value="kojin">
+            </div>
+            <div class="tax-note-box kojin" id="biz-type-note">
+              📌 <strong>個人事業主の場合：</strong>所得税・住民税・事業税・消費税などを合算し、月割りで入力してください。<br>
+              ※ 目安：年収500万円の場合、年間税負担 約80〜120万円（月7〜10万円程度）
+            </div>
+            <div class="form-row">
+              <label>税金（月額換算）</label>
+              <input type="number" id="clinic-tax" value="0" min="0" step="0.5" oninput="calculate()">
+              <span class="unit">万円</span>
+            </div>
+
             <div id="clinic-total-row" style="text-align:right;font-weight:700;font-size:14px;color:#2d3748;padding-top:10px;border-top:2px solid #e2e8f0;margin-top:8px;"></div>
           </div>
         </div>
@@ -787,7 +800,6 @@ footer {
             <div class="breakdown-row"><span class="bl indent">税負担加味（税率25%）</span><span class="bv orange" id="bd-need-pretax">0万円</span></div>
             <div class="breakdown-row"><span class="bl" style="font-weight:700">必要な月商</span><span class="bv orange" id="bd-monthly-rev">0万円</span></div>
             <div class="breakdown-row"><span class="bl indent">うち経費合計</span><span class="bv" id="bd-expense">0万円</span></div>
-            <div class="breakdown-row"><span class="bl indent">うち研修費（年商10%連動）</span><span class="bv purple" id="bd-training">0万円</span></div>
             <div class="breakdown-row"><span class="bl" style="font-weight:700">年商換算</span><span class="bv orange" id="bd-annual-rev">0万円</span></div>
           </div>
 
@@ -816,7 +828,7 @@ footer {
 
   </div><!-- /content -->
 
-  <!-- ═══ FOOTER (保持) ═══ -->
+  <!-- ═══ FOOTER ═══ -->
   <footer>
     <p>技術向上後の鍼灸院経営『未来予想図』シミュレーション</p>
     <p>© 2026 リバランス整顔美容鍼. All Rights Reserved.</p>
@@ -831,9 +843,8 @@ footer {
 ════════════════════════════════════════════ */
 let lifeChart = null;
 let retireAgeForChart = 65;
-let trainingLinked = true;
 let livingDetailed = false;
-let childrenData = []; // [{age, kindergarten, elementary, middle, high, university, juku}]
+let childrenData = [];
 
 const EDU_COSTS = {
   kindergarten: { public: 17, private: 31 },
@@ -889,7 +900,6 @@ function toggleRent() {
   document.getElementById('rent-group').style.display  = h === 'rent'  ? 'block' : 'none';
   document.getElementById('own-group').style.display   = (h === 'loan' || h === 'owned') ? 'block' : 'none';
   if (h === 'owned') {
-    // 固定資産税等は表示するが、ローン月額は隠す
     document.getElementById('loan-group').style.display = 'none';
   }
   updateReform();
@@ -963,13 +973,18 @@ function syncLiving() {
   calculate();
 }
 
-/* ────── Training link toggle ────── */
-function toggleTrainingLink() {
-  trainingLinked = !trainingLinked;
-  document.getElementById('training-link-btn').textContent = trainingLinked ? '年商連動 ON' : '手動入力';
-  document.getElementById('training-link-info').style.display = trainingLinked ? 'block' : 'none';
-  document.getElementById('training-manual-row').style.display = trainingLinked ? 'none' : 'flex';
-  calculate();
+/* ────── 事業形態ノート更新 ────── */
+function updateBizTypeNote() {
+  const bizType = sv('biz-type');
+  const noteEl = document.getElementById('biz-type-note');
+  if (!noteEl) return;
+  if (bizType === 'kojin') {
+    noteEl.className = 'tax-note-box kojin';
+    noteEl.innerHTML = '📌 <strong>個人事業主の場合：</strong>所得税・住民税・事業税・消費税などを合算し、月割りで入力してください。<br>※ 目安：年収500万円の場合、年間税負担 約80〜120万円（月7〜10万円程度）';
+  } else {
+    noteEl.className = 'tax-note-box hojin';
+    noteEl.innerHTML = '📌 <strong>法人の場合：</strong>法人税・法人住民税・法人事業税などを合算し、月割りで入力してください。<br>※ 目安：法人利益500万円の場合、年間税負担 約150〜200万円（月12〜17万円程度）';
+  }
 }
 
 /* ────── Work days / Treatment update ────── */
@@ -1010,10 +1025,7 @@ function updateChildren() {
   renderEduTab();
   calculate();
 }
-// ── 入学年度ベース: 4月以降生まれは入学が1年遅れる ──
 function getSchoolOffset(birthMonth) {
-  // 1-3月生まれ: 0（4月までに満年齢到達→その4月に入学）
-  // 4-12月生まれ: +1（4月時点では未到達→翌4月に入学）
   return (birthMonth >= 4) ? 1 : 0;
 }
 function getStageLabel(age, birthMonth) {
@@ -1041,7 +1053,6 @@ function renderChildren() {
         <input type="number" value="${child.age}" min="0" max="25" step="1"
           oninput="updateChildAge(${i},this.value)" style="width:80px;padding:6px 8px;border:1.5px solid #cbd5e0;border-radius:7px;font-size:14px;font-family:inherit;">
         <span class="unit">歳</span>
-        
       </div>
       <div class="form-row">
         <label>誕生月（入学年度計算用）</label>
@@ -1065,25 +1076,19 @@ function renderEduTab() {
   let html = '';
   childrenData.forEach((child, i) => {
     html += `<div class="sec-title" style="margin-top:${i>0?'20px':'0'};">第${i+1}子（${child.age}歳）</div>`;
-    // 入学年度ベースのオフセット
     const o = getSchoolOffset(child.birthMonth || 4);
-    // Kindergarten
     if (child.age <= 5 + o) {
       html += makeEduSelect(i, 'kindergarten', '幼稚園', `公立 ${EDU_COSTS.kindergarten.public}万/年`, `私立 ${EDU_COSTS.kindergarten.private}万/年`);
     }
-    // Elementary
     if (child.age <= 11 + o) {
       html += makeEduSelect(i, 'elementary', '小学校', `公立 ${EDU_COSTS.elementary.public}万/年`, `私立 ${EDU_COSTS.elementary.private}万/年`);
     }
-    // Middle
     if (child.age <= 14 + o) {
       html += makeEduSelect(i, 'middle', '中学校', `公立 ${EDU_COSTS.middle.public}万/年`, `私立 ${EDU_COSTS.middle.private}万/年`);
     }
-    // High
     if (child.age <= 17 + o) {
       html += makeEduSelect(i, 'high', '高校', `公立 ${EDU_COSTS.high.public}万/年`, `私立 ${EDU_COSTS.high.private}万/年`);
     }
-    // University
     if (child.age <= 21 + o) {
       html += `<div class="form-row">
         <label>大学</label>
@@ -1095,7 +1100,6 @@ function renderEduTab() {
         </select>
       </div>`;
     }
-    // Juku
     html += `<div class="form-row">
       <label>塾・習い事（月額）</label>
       <input type="number" value="${child.juku}" min="0" step="0.5"
@@ -1145,10 +1149,9 @@ function calcYearlyEducation(currentAge, endAge) {
 
   childrenData.forEach(child => {
     const childCurrentAge = child.age;
-    // 入学年度ベース: 誕生月によるオフセット（4月以降生まれは+1年）
     const o = getSchoolOffset(child.birthMonth || 4);
     for (let pa = currentAge; pa <= endAge; pa++) {
-      const ca = childCurrentAge + (pa - currentAge); // child's age at parent age pa
+      const ca = childCurrentAge + (pa - currentAge);
       let annualCost = 0;
       let stageKey = null;
 
@@ -1158,7 +1161,6 @@ function calcYearlyEducation(currentAge, endAge) {
       else if (ca >= 15+o && ca <= 17+o) { annualCost = EDU_COSTS.high[child.high]                 || EDU_COSTS.high.public;         stageKey = 'high'; }
       else if (ca >= 18+o && ca <= 21+o) { annualCost = EDU_COSTS.university[child.university]     || 0;                             stageKey = 'university'; }
 
-      // 塾・習い事（入学年度ベース: 3+o〜17+o歳）
       if (ca >= 3+o && ca <= 17+o) annualCost += child.juku * 12;
 
       if (annualCost > 0) {
@@ -1205,14 +1207,15 @@ function calculate() {
   const ideco       = v('ideco', 0);
   const clinicRent  = v('clinic-rent', 0);
   const clinicUtil  = v('clinic-utilities', 0);
+  const clinicTelecom = v('clinic-telecom', 0);   // ▼ 追加：通信費
   const clinicAd    = v('clinic-ad', 0);
-  const clinicTrain = v('clinic-training', 0);
   const clinicSup   = v('clinic-supplies', 1.5);
   const clinicLease = v('clinic-lease', 1);
   const clinicStaff = v('clinic-staff', 0);
   const clinicIns   = v('clinic-insurance', 4);
   const clinicAcc   = v('clinic-accountant', 3);
   const clinicOther = v('clinic-other', 0);
+  const clinicTax   = v('clinic-tax', 0);         // ▼ 追加：税金
   const weekDays    = v('week-days', 5);
   const annHolidays = v('annual-holidays', 20);
   const workHours   = v('work-hours', 8);
@@ -1244,7 +1247,7 @@ function calculate() {
     });
     housingTotal += reformTotal;
   } else if (housingType === 'loan') {
-    const loanMonths = Math.min(loanYears * 12, moWorking); // 引退後はローン0
+    const loanMonths = Math.min(loanYears * 12, moWorking);
     housingTotal += rentCost * loanMonths;
     housingTotal += propTax * yearsToEnd + mainFee * moTotal;
     REFORM_SCHEDULE.forEach(r => {
@@ -1252,7 +1255,7 @@ function calculate() {
       if (y > 0 && currentAge + y <= endAge) { reformTotal += r.cost; }
     });
     housingTotal += reformTotal;
-  } else { // rent
+  } else {
     housingTotal += rentMonthly * moTotal;
     housingTotal += renewalFee * Math.floor(yearsToEnd / 2);
   }
@@ -1282,13 +1285,13 @@ function calculate() {
   const needFromClinic = Math.max(0, totalExpenses - nonWorkIncome);
   const needBeforeTax  = needFromClinic / (1 - 0.25);
 
-  /* ── 経費計算 ── */
-  const baseExpense = clinicRent + clinicUtil + clinicAd + clinicSup + clinicLease +
-    clinicStaff + clinicIns + clinicAcc + clinicOther;
+  /* ── 経費計算（通信費・税金を追加） ── */
+  const baseExpense = clinicRent + clinicUtil + clinicTelecom + clinicAd + clinicSup +
+    clinicLease + clinicStaff + clinicIns + clinicAcc + clinicOther + clinicTax;
+
   const monthlyTakeHome = moWorking > 0 ? needBeforeTax / moWorking : 0;
-  const monthlyRevenue  = moWorking > 0 ? (monthlyTakeHome + baseExpense) / 0.9 : 0;
-  const trainingMonthly = trainingLinked ? monthlyRevenue * 0.1 : clinicTrain;
-  const totalExpenseMonthly = baseExpense + trainingMonthly;
+  const monthlyRevenue  = moWorking > 0 ? (monthlyTakeHome + baseExpense) : 0;
+  const totalExpenseMonthly = baseExpense;
 
   /* ── 施術単価逆算 ── */
   const annualWorkDays  = Math.round(365 - (7 - weekDays) * 52 - annHolidays);
@@ -1296,12 +1299,9 @@ function calculate() {
   const dailyMin        = Math.round(workHours * 60 * occRate);
   const maxPatients     = Math.floor(dailyMin / treatMin);
   const monthlyPatients = maxPatients * monthlyWorkDays;
-  const requiredPrice   = monthlyPatients > 0 ? (monthlyRevenue - sideIncome) / monthlyPatients : 0; // 万円/人
+  const requiredPrice   = monthlyPatients > 0 ? (monthlyRevenue - sideIncome) / monthlyPatients : 0;
 
-  /* ── トレーニング連動テキスト更新 ── */
-  const trainInfoEl = document.getElementById('training-link-info');
-  if (trainInfoEl) trainInfoEl.textContent =
-    `必要月商 × 12ヶ月 × 10% ÷ 12 = ${fmtD(trainingMonthly)}万円/月（業界セオリー）`;
+  /* ── 経費合計テキスト更新 ── */
   const clinicTotalEl = document.getElementById('clinic-total-row');
   if (clinicTotalEl) clinicTotalEl.textContent = `経費合計: ${fmtD(totalExpenseMonthly)}万円/月`;
 
@@ -1311,7 +1311,6 @@ function calculate() {
   document.getElementById('res-unit-sub').textContent =
     `必要月商: ${fmtD(monthlyRevenue)}万円 ｜ 月間施術: ${Math.round(monthlyPatients)}人 ｜ 1日${maxPatients}人 × 月${fmtD(monthlyWorkDays)}日`;
 
-  // 内訳
   const bd = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = fmt(val) + '万円'; };
   bd('bd-living-w',   livingWorkTotal);
   bd('bd-living-r',   livingRetTotal);
@@ -1330,7 +1329,6 @@ function calculate() {
   bd('bd-need-pretax', needBeforeTax);
   bd('bd-monthly-rev', monthlyRevenue);
   bd('bd-expense',   totalExpenseMonthly);
-  bd('bd-training',  trainingMonthly);
   bd('bd-annual-rev', monthlyRevenue * 12);
 
   /* ── グラフデータ作成 ── */
@@ -1360,18 +1358,15 @@ function buildChart(
   for (let age = currentAge; age <= endAge; age++) {
     labels.push(age + '歳');
 
-    // 年収入
     let annIncome = 0;
     if (age < retireAge)  annIncome = monthlyRevenue * 12;
     if (age >= pensionStart) annIncome += pensionMon * 12;
     cumIncome += annIncome;
 
-    // 年支出
     let monthlyExp = 0;
     if (age < retireAge)  monthlyExp += livingAct;
     else                  monthlyExp += livingRet;
 
-    // 住居
     if (housingType === 'owned') {
       monthlyExp += propTax / 12 + mainFee;
     } else if (housingType === 'loan') {
@@ -1382,7 +1377,6 @@ function buildChart(
       monthlyExp += rentMonthly;
     }
 
-    // 車（月額）
     if (carType !== 'no') {
       const usesCar = (carType === 'retire') ? (age < retireAge) : true;
       if (usesCar) monthlyExp += carAnnual * carCount / 12;
@@ -1390,19 +1384,16 @@ function buildChart(
 
     let annExpense = monthlyExp * 12;
 
-    // 住居リフォーム（一時金）
     if (housingType !== 'rent') {
       REFORM_SCHEDULE.forEach(r => {
         const y = r.year - buildAge;
         if (y > 0 && currentAge + y === age) annExpense += r.cost;
       });
     }
-    // 賃貸更新料
     if (housingType === 'rent') {
       const yearsElapsed = age - currentAge;
       if (yearsElapsed > 0 && yearsElapsed % 2 === 0) annExpense += renewalFee;
     }
-    // 車買い替え
     if (carType !== 'no') {
       const usesCar = (carType === 'retire') ? (age < retireAge) : true;
       if (usesCar) {
@@ -1410,9 +1401,7 @@ function buildChart(
         if (yearsElapsed > 0 && carCycle > 0 && yearsElapsed % carCycle === 0) annExpense += carCost * carCount;
       }
     }
-    // 教育費
     annExpense += yearlyEdu[age] || 0;
-    // 特別支出
     annExpense += travelAnn + ceremAnn;
 
     cumExpense += annExpense;
@@ -1423,13 +1412,11 @@ function buildChart(
     expenseData.push(Math.round(cumExpense));
     balanceData.push(Math.round(balance));
 
-    // Education stage arrays for chart
     Object.keys(stageData).forEach(k => {
       stageData[k].push(Math.round(stageArrays[k][age] || 0));
     });
   }
 
-  // 警告表示
   const warnEl = document.getElementById('warning-box');
   const warnAge = document.getElementById('warning-age');
   if (warningAge) {
@@ -1439,7 +1426,6 @@ function buildChart(
     warnEl.style.display = 'none';
   }
 
-  // Chart.js
   const canvasEl = document.getElementById('lifeChart');
   if (!canvasEl) return;
   const ctx = canvasEl.getContext('2d');
@@ -1467,7 +1453,6 @@ function buildChart(
       },
       pointBackgroundColor: balanceData.map(v => v < 0 ? '#e74c3c' : '#27ae60'),
     },
-    // 教育費棒グラフ（ラベルは段階名のみ）
     { type:'bar', label:'幼稚園',  data: stageData.kindergarten, backgroundColor:'rgba(46,204,113,0.75)',  yAxisID:'yEdu', stack:'edu', order:2, barPercentage:0.9 },
     { type:'bar', label:'小学校',  data: stageData.elementary,   backgroundColor:'rgba(52,152,219,0.75)',  yAxisID:'yEdu', stack:'edu', order:2, barPercentage:0.9 },
     { type:'bar', label:'中学校',  data: stageData.middle,        backgroundColor:'rgba(41,128,185,0.75)',  yAxisID:'yEdu', stack:'edu', order:2, barPercentage:0.9 },
@@ -1475,7 +1460,6 @@ function buildChart(
     { type:'bar', label:'大学',    data: stageData.university,    backgroundColor:'rgba(231,76,60,0.75)',   yAxisID:'yEdu', stack:'edu', order:2, barPercentage:0.9 },
   ];
 
-  // 引退年齢プラグイン
   const retireLinePlugin = {
     id: 'retireLine',
     afterDraw(chart) {
@@ -1581,7 +1565,6 @@ function buildChart(
    INITIALIZATION
 ═══════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
-  // 入力変更時の自動計算
   document.querySelectorAll('input[type="number"]:not([readonly]), select').forEach(el => {
     if (!el.hasAttribute('oninput') && !el.hasAttribute('onchange')) {
       el.addEventListener('input', calculate);
@@ -1589,19 +1572,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 初期化
   updateWorkDays();
   updateTreatment();
   toggleRent();
   toggleCar();
   updateReform();
-
-  // 研修費連動初期表示
-  document.getElementById('training-link-info').style.display = 'block';
-  document.getElementById('training-manual-row').style.display = 'none';
+  updateBizTypeNote();
 
   calculate();
-  // グラフ初期描画後にリサイズイベントを発火してCanvas sizeを確実に反映
   setTimeout(() => {
     window.dispatchEvent(new Event('resize'));
   }, 100);

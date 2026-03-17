@@ -621,10 +621,17 @@ footer {
               <span class="unit">万円</span>
             </div>
             <div class="form-row">
-              <label>広告費（万円/月）</label>
-              <input type="number" id="clinic-ad" value="0" min="0" step="0.5" oninput="calculate()">
+              <label>広告費</label>
+              <input type="number" id="clinic-ad" value="0" min="0" step="0.5" readonly style="background:#f0f4f8;color:#718096;cursor:not-allowed;">
               <span class="unit">万円</span>
             </div>
+            <div class="form-note"></div>
+            <div class="form-row">
+              <label>研修費</label>
+              <input type="number" id="clinic-training" value="0" min="0" step="0.5" readonly style="background:#f0f4f8;color:#718096;cursor:not-allowed;">
+              <span class="unit">万円</span>
+            </div>
+            <div class="form-note"></div>
             <div class="form-row">
               <label>消耗品・材料費</label>
               <input type="number" id="clinic-supplies" value="1.5" min="0" step="0.5" oninput="calculate()">
@@ -1176,7 +1183,6 @@ function calcYearlyEducation(currentAge, endAge) {
    MAIN CALCULATE
 ═══════════════════════════════════════════ */
 function calculate() {
-  // ヘッダーの終了年齢を更新
   const headerEndAge = document.getElementById('header-end-age');
   if (headerEndAge) {
     headerEndAge.textContent = document.getElementById('end-age') ? document.getElementById('end-age').value : '84';
@@ -1207,15 +1213,14 @@ function calculate() {
   const ideco       = v('ideco', 0);
   const clinicRent  = v('clinic-rent', 0);
   const clinicUtil  = v('clinic-utilities', 0);
-  const clinicTelecom = v('clinic-telecom', 0);   // ▼ 追加：通信費
-  const clinicAd    = v('clinic-ad', 0);
+  const clinicTelecom = v('clinic-telecom', 0);
   const clinicSup   = v('clinic-supplies', 1.5);
   const clinicLease = v('clinic-lease', 1);
   const clinicStaff = v('clinic-staff', 0);
   const clinicIns   = v('clinic-insurance', 4);
   const clinicAcc   = v('clinic-accountant', 3);
   const clinicOther = v('clinic-other', 0);
-  const clinicTax   = v('clinic-tax', 0);         // ▼ 追加：税金
+  const clinicTax   = v('clinic-tax', 0);
   const weekDays    = v('week-days', 5);
   const annHolidays = v('annual-holidays', 20);
   const workHours   = v('work-hours', 8);
@@ -1285,12 +1290,26 @@ function calculate() {
   const needFromClinic = Math.max(0, totalExpenses - nonWorkIncome);
   const needBeforeTax  = needFromClinic / (1 - 0.25);
 
-  /* ── 経費計算（通信費・税金を追加） ── */
-  const baseExpense = clinicRent + clinicUtil + clinicTelecom + clinicAd + clinicSup +
+  /* ── 経費計算（広告費5%・研修費10%は月商連動で自動計算） ── */
+  // 固定経費（広告費・研修費を除く）
+  const fixedExpense = clinicRent + clinicUtil + clinicTelecom + clinicSup +
     clinicLease + clinicStaff + clinicIns + clinicAcc + clinicOther + clinicTax;
 
   const monthlyTakeHome = moWorking > 0 ? needBeforeTax / moWorking : 0;
-  const monthlyRevenue  = moWorking > 0 ? (monthlyTakeHome + baseExpense) : 0;
+  // 循環参照を代数的に解く:
+  // R = monthlyTakeHome + fixedExpense + 0.05R + 0.10R
+  // R × 0.85 = monthlyTakeHome + fixedExpense
+  const monthlyRevenue  = moWorking > 0 ? (monthlyTakeHome + fixedExpense) / 0.85 : 0;
+
+  // 広告費・研修費を月商から算出してフィールドに反映
+  const adAuto       = Math.round(monthlyRevenue * 0.05 * 10) / 10;
+  const trainingAuto = Math.round(monthlyRevenue * 0.10 * 10) / 10;
+  const adEl = document.getElementById('clinic-ad');
+  if (adEl) adEl.value = adAuto;
+  const trainingEl = document.getElementById('clinic-training');
+  if (trainingEl) trainingEl.value = trainingAuto;
+
+  const baseExpense = fixedExpense + adAuto + trainingAuto;
   const totalExpenseMonthly = baseExpense;
 
   /* ── 施術単価逆算 ── */
@@ -1585,6 +1604,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }, 100);
 });
 </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"rayId":"9dd88879aee392af","serverTiming":{"name":{"cfExtPri":true,"cfEdge":true,"cfOrigin":true,"cfL4":true,"cfSpeedBrain":true,"cfCacheStatus":true}},"version":"2025.9.1","token":"4edd5f8ec12a48cfa682ab8261b80a79"}' crossorigin="anonymous"></script>
 </body>
 </html>
-
